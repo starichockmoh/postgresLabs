@@ -1,3 +1,5 @@
+:CONNECT localhost:5432
+USE labaDatabase;
 --joins
 SELECT requests.name, requests.date_created, vehicles.car_number, drivers.last_name 
 FROM requests
