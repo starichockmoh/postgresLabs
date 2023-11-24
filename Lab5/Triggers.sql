@@ -208,3 +208,37 @@ WHERE id = 3;
 
 DROP TRIGGER request_cost2_change_trigger ON pick_up_points;
 DROP FUNCTION request_cost2_change;
+
+
+-- триггер INSTEAD OF
+CREATE OR REPLACE VIEW vehicles_view AS
+SELECT id, car_number
+FROM vehicles;
+
+SELECT * FROM vehicles_view;
+
+CREATE OR REPLACE FUNCTION vehicles_view_func() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE requests
+    SET vehicle_id = 100010
+    WHERE vehicle_id = OLD.id;
+
+    DELETE FROM vehicles h WHERE h.id = OLD.id;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER vehicles_view_trigger
+INSTEAD OF DELETE ON vehicles_view
+FOR EACH ROW
+EXECUTE FUNCTION vehicles_view_func();
+
+
+DELETE FROM vehicles_view where id = 5;
+
+DROP TRIGGER vehicles_view_trigger ON vehicles_view;
+DROP FUNCTION vehicles_view_func;
+
+
+
